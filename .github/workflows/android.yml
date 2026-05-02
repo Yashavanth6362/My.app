@@ -5,56 +5,22 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04   # ✅ stable (avoids lib issues)
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout
-      uses: actions/checkout@v4
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
 
-    - name: 🧰 Install system packages
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          python3-pip git zip unzip openjdk-17-jdk \
-          autoconf libtool pkg-config zlib1g-dev \
-          libncurses5-dev libncursesw5-dev \
-          libtinfo6 \
-          cmake libffi-dev libssl-dev
+      - name: 📱 Build APK using Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          buildozer_version: stable
 
-        pip install --upgrade pip
-        pip install buildozer "cython<3.0"
-
-    - name: 📱 Setup Android SDK
-  run: |
-    export ANDROID_HOME=$HOME/android-sdk
-    mkdir -p $ANDROID_HOME
-    cd $ANDROID_HOME
-
-    wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
-    unzip tools.zip
-
-    # ✅ FIX: correct structure handling
-    mkdir -p cmdline-tools/latest
-    mv cmdline-tools/cmdline-tools/* cmdline-tools/latest/ || true
-
-    export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
-
-    yes | sdkmanager --licenses
-
-    sdkmanager \
-      "platform-tools" \
-      "platforms;android-33" \
-      "build-tools;33.0.2"
-    - name: 🏗️ Build APK
-      run: |
-        export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
-
-        buildozer android debug
-
-    - name: 📦 Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: APK
-        path: bin/*.apk
+      - name: 📦 Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: ${{ steps.buildozer.outputs.filename }}
