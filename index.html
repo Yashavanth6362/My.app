@@ -1,10 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My App</title>
+<meta charset="UTF-8">
+<title>Code Explorer PRO</title>
+
+<style>
+body { font-family: Arial; background:#0f172a; color:white; padding:20px; }
+input { width:70%; padding:10px; }
+button { padding:10px; }
+.file { padding:8px; background:#1e293b; margin:5px 0; cursor:pointer; }
+pre { background:black; padding:10px; overflow:auto; }
+</style>
 </head>
+
 <body>
-  <h1>🚀 My Website App</h1>
-  <p>Running as APK</p>
+
+<h2>馃寪 Code Explorer PRO</h2>
+
+<input id="url" placeholder="Enter URL (https://...)">
+<button onclick="loadSite()">Load</button>
+
+<h3>馃搧 Files</h3>
+<div id="files"></div>
+
+<h3>馃搫 Code</h3>
+<pre id="code"></pre>
+
+<script>
+async function loadSite(){
+  let url = document.getElementById("url").value;
+
+  let proxy = "https://corsproxy.io/?";
+
+  try {
+    let res = await fetch(proxy + encodeURIComponent(url));
+    let html = await res.text();
+
+    let files = [];
+
+    // HTML
+    files.push({name:"index.html", content:html});
+
+    // JS
+    let js = [...html.matchAll(/<script.*?src="(.*?)"/g)];
+    js.forEach(s => files.push({name:s[1], url:s[1]}));
+
+    // CSS
+    let css = [...html.matchAll(/<link.*?href="(.*?)"/g)];
+    css.forEach(c => files.push({name:c[1], url:c[1]}));
+
+    renderFiles(files);
+
+  } catch(e){
+    alert("鉂� Failed (CORS blocked)");
+  }
+}
+
+function renderFiles(files){
+  let html = "";
+  files.forEach(f=>{
+    if(f.content){
+      html += `<div class="file" onclick="showCode(\`${escapeBackticks(f.content)}\`)">${f.name}</div>`;
+    } else {
+      html += `<div class="file" onclick="loadFile('${f.url}')">${f.name}</div>`;
+    }
+  });
+  document.getElementById("files").innerHTML = html;
+}
+
+function escapeBackticks(str){
+  return str.replace(/`/g,"");
+}
+
+async function loadFile(url){
+  let proxy = "https://corsproxy.io/?";
+
+  try {
+    let res = await fetch(proxy + encodeURIComponent(url));
+    let txt = await res.text();
+    document.getElementById("code").textContent = txt;
+  } catch(e){
+    alert("Cannot load file");
+  }
+}
+
+function showCode(code){
+  document.getElementById("code").textContent = code;
+}
+</script>
+
 </body>
 </html>
