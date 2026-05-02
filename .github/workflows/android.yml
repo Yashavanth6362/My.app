@@ -12,7 +12,7 @@ jobs:
     - name: 📥 Checkout
       uses: actions/checkout@v4
 
-    - name: 🟢 Setup Node.js
+    - name: 🟢 Setup Node
       uses: actions/setup-node@v4
       with:
         node-version: 18
@@ -22,27 +22,41 @@ jobs:
         npm install
         npm install @capacitor/core @capacitor/cli
 
-    - name: ⚙️ Build web (if needed)
+    # ✅ Create web folder
+    - name: 🌐 Prepare web files
       run: |
         mkdir -p www
-        cp index.html www/index.html
+        cp index.html www/index.html || true
 
-    - name: 📱 Add Android platform
+    # ✅ INIT Capacitor (IMPORTANT)
+    - name: ⚙️ Init Capacitor
       run: |
-        npx cap add android || true
+        npx cap init MyApp com.myapp.app --web-dir=www || true
+
+    # ✅ ADD ANDROID (THIS WAS MISSING)
+    - name: 📱 Add Android
+      run: |
+        npx cap add android
+
+    # ✅ Sync files
+    - name: 🔄 Sync
+      run: |
         npx cap sync
 
+    # ✅ Java setup
     - name: ☕ Setup Java
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 
+    # ✅ Build APK
     - name: 🔨 Build APK
       run: |
         cd android
         ./gradlew assembleDebug
 
+    # ✅ Upload APK
     - name: 📦 Upload APK
       uses: actions/upload-artifact@v4
       with:
