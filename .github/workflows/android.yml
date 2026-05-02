@@ -35,8 +35,7 @@ jobs:
 
     # ✅ Build APK (Buildozer handles SDK automatically)
     - name: Build APK
-  run: |
-    buildozer android debug --verbose
+  run:buildozer android debug --verbose
     # ✅ Upload APK
     - name: 📦 Upload APK
       uses: actions/upload-artifact@v4
