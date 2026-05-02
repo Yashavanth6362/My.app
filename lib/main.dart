@@ -10,68 +10,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Simple App',
       debugShowCheckedModeBanner: false,
+      title: 'My App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       home: const HomePage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int count = 0;
-
-  void increase() {
-    setState(() {
-      count++;
-    });
-  }
-
-  void decrease() {
-    setState(() {
-      if (count > 0) count--;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Counter App"),
-        centerTitle: true,
+        title: const Text("My App"),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Value:", style: TextStyle(fontSize: 20)),
-            const SizedBox(height: 10),
-            Text(
-              "$count",
-              style: const TextStyle(fontSize: 40),
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: decrease,
-                  child: const Text("Decrease"),
-                ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: increase,
-                  child: const Text("Increase"),
-                ),
-              ],
-            )
-          ],
+        child: ElevatedButton(
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("App Working ✅")),
+            );
+          },
+          child: const Text("Click Me"),
         ),
       ),
     );
