@@ -15,7 +15,7 @@ fullscreen = 0
 
 android.permissions = INTERNET
 
-# Faster build settings
+# ✅ FIXED SDK SETTINGS
 android.api = 33
 android.minapi = 21
 android.sdk = 33
