@@ -1,0 +1,9 @@
+{
+  "appId": "com.royzo.app",
+  "appName": "Royzo World",
+  "webDir": "www",
+  "server": {
+    "url": "https://royzoworld.ai1x.us.ci/",
+    "cleartext": true
+  }
+}
